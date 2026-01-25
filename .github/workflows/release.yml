@@ -36,6 +36,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -48,14 +51,14 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install frontend dependencies
-        run: npm install
+        run: bun install
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tauriScript: npm run tauri
+          tauriScript: bun run tauri
           tagName: ${{ github.ref_name }}
           releaseName: 'Agent Log ${{ github.ref_name }}'
           releaseBody: 'Download the appropriate installer for your platform below.'
