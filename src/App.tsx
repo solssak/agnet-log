@@ -105,6 +105,9 @@ function App() {
         projectPath: project.path,
       });
       setSessions(result);
+      if (result.length > 0) {
+        loadMessages(result[0]);
+      }
     } catch (error) {
       console.error("Failed to load sessions:", error);
     }
