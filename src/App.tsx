@@ -391,27 +391,30 @@ function App() {
                   </div>
                 </div>
 
-                {viewMode === "messages" &&
-                  messages.map((msg, idx) => (
-                    <div
-                      key={msg.uuid || idx}
-                      className={`message ${msg.message?.role || ""}`}
-                    >
-                      <div className="message-header">
-                        <span className="message-role">
-                          {msg.message?.role}
-                        </span>
-                        <span className="message-time">
-                          {msg.timestamp
-                            ? new Date(msg.timestamp).toLocaleTimeString()
-                            : ""}
-                        </span>
+                {viewMode === "messages" && (
+                  <div className="messages-container">
+                    {messages.map((msg, idx) => (
+                      <div
+                        key={msg.uuid || idx}
+                        className={`message ${msg.message?.role || ""}`}
+                      >
+                        <div className="message-header">
+                          <span className="message-role">
+                            {msg.message?.role}
+                          </span>
+                          <span className="message-time">
+                            {msg.timestamp
+                              ? new Date(msg.timestamp).toLocaleTimeString()
+                              : ""}
+                          </span>
+                        </div>
+                        <div className="message-content">
+                          <MessageRenderer content={getMessageText(msg)} />
+                        </div>
                       </div>
-                      <div className="message-content">
-                        <MessageRenderer content={getMessageText(msg)} />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                )}
 
                 {viewMode === "snippets" &&
                   extractCodeSnippets().map((snippet, idx) => (
