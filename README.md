@@ -28,13 +28,13 @@ Or visit the [Releases page](https://github.com/solssak/agnet-log/releases) for 
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Run dev server
-npm run tauri dev
+bun run tauri dev
 
 # Build for production
-npm run tauri build
+bun run tauri build
 ```
 
 ## Tech Stack
@@ -43,3 +43,5 @@ npm run tauri build
 - [React](https://react.dev/) - UI library
 - [TypeScript](https://www.typescriptlang.org/) - Language
 - [Vite](https://vitejs.dev/) - Build tool
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Bun](https://bun.sh/) - Package manager & runtime
