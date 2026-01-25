@@ -85,16 +85,16 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="dashboard-inline">
-        <div className="loading">Loading statistics...</div>
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-center items-center h-64 text-gray-500">Loading statistics...</div>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="dashboard-inline">
-        <div className="loading">Failed to load statistics</div>
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-center items-center h-64 text-gray-500">Failed to load statistics</div>
       </div>
     );
   }
@@ -118,70 +118,57 @@ export function Dashboard() {
   }));
 
   return (
-    <div className="dashboard-inline">
-      <div className="stats-split">
-        <div className="stats-section">
-          <div className="stats-section-label">Tokens</div>
-          <div className="stats-row">
-            <span className="stats-icon">↓</span>
-            <span className="stats-value">
-              {formatTokens(stats.total_input_tokens)}
-            </span>
-            <span className="stats-label">input</span>
+    <div className="flex flex-col gap-5">
+      <div className="flex gap-4">
+        <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Tokens</div>
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-sm text-gray-500">↓</span>
+            <span className="text-xl font-bold">{formatTokens(stats.total_input_tokens)}</span>
+            <span className="text-sm text-gray-500">input</span>
           </div>
-          <div className="stats-row">
-            <span className="stats-icon">↑</span>
-            <span className="stats-value">
-              {formatTokens(stats.total_output_tokens)}
-            </span>
-            <span className="stats-label">output</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm text-gray-500">↑</span>
+            <span className="text-xl font-bold">{formatTokens(stats.total_output_tokens)}</span>
+            <span className="text-sm text-gray-500">output</span>
           </div>
         </div>
-        <div className="stats-section">
-          <div className="stats-section-label">Activity</div>
-          <div className="stats-row">
-            <span className="stats-value">
-              {stats.total_sessions.toLocaleString()}
-            </span>
-            <span className="stats-label">sessions</span>
+        <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Activity</div>
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-xl font-bold">{stats.total_sessions.toLocaleString()}</span>
+            <span className="text-sm text-gray-500">sessions</span>
           </div>
-          <div className="stats-row">
-            <span className="stats-value">
-              {stats.total_messages.toLocaleString()}
-            </span>
-            <span className="stats-label">messages</span>
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-xl font-bold">{stats.total_messages.toLocaleString()}</span>
+            <span className="text-sm text-gray-500">messages</span>
           </div>
-          <div className="stats-row">
-            <span className="stats-value">
-              {formatDuration(stats.avg_session_minutes)}
-            </span>
-            <span className="stats-label">avg time</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-bold">{formatDuration(stats.avg_session_minutes)}</span>
+            <span className="text-sm text-gray-500">avg time</span>
           </div>
         </div>
-      </div>
-      <div className="stats-hero">
-        <div className="stats-hero-value">
-          ${stats.estimated_cost.toFixed(2)}
-        </div>
-        <div className="stats-hero-label">Estimated cost</div>
       </div>
 
-      <div className="sparkline-section">
-        <div className="sparkline-header">
-          <span className="sparkline-title">Token usage (30d)</span>
-          <span className="sparkline-total">
-            {formatTokens(chartData.reduce((sum, d) => sum + d.total, 0))}
-          </span>
+      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-center text-white">
+        <div className="text-4xl font-bold mb-1">${stats.estimated_cost.toFixed(2)}</div>
+        <div className="text-sm opacity-85">Estimated cost</div>
+      </div>
+
+      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-sm text-gray-500">Token usage (30d)</span>
+          <span className="text-lg font-bold">{formatTokens(chartData.reduce((sum, d) => sum + d.total, 0))}</span>
         </div>
-        <div className="sparkline-bars-container">
-          <div className="sparkline-bars">
+        <div className="relative">
+          <div className="flex items-end gap-0.5 h-12">
             {chartData.map((d, i) => {
               const maxTotal = Math.max(...chartData.map((x) => x.total), 1);
               const height = (d.total / maxTotal) * 100;
               return (
                 <div
                   key={i}
-                  className="sparkline-bar"
+                  className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t cursor-pointer hover:from-blue-600 hover:to-blue-500 transition-all"
                   style={{ height: `${Math.max(height, 4)}%` }}
                   onMouseEnter={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -198,104 +185,73 @@ export function Dashboard() {
           </div>
           {hoveredBar && chartData[hoveredBar.index] && (
             <div
-              className="sparkline-tooltip"
-              style={{
-                left: `${(hoveredBar.index / chartData.length) * 100}%`,
-              }}
+              className="absolute bottom-full mb-2 -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg"
+              style={{ left: `${(hoveredBar.index / chartData.length) * 100}%` }}
             >
-              <div className="sparkline-tooltip-date">
-                {chartData[hoveredBar.index].date}
-              </div>
-              <div className="sparkline-tooltip-row">
-                <span>↓</span> {formatTokens(chartData[hoveredBar.index].input)}
-              </div>
-              <div className="sparkline-tooltip-row">
-                <span>↑</span>{" "}
-                {formatTokens(chartData[hoveredBar.index].output)}
-              </div>
-              <div className="sparkline-tooltip-total">
-                {formatTokens(chartData[hoveredBar.index].total)} total
-              </div>
+              <div className="font-semibold mb-1.5 pb-1.5 border-b border-white/20">{chartData[hoveredBar.index].date}</div>
+              <div className="text-gray-300 mb-0.5">↓ {formatTokens(chartData[hoveredBar.index].input)}</div>
+              <div className="text-gray-300 mb-0.5">↑ {formatTokens(chartData[hoveredBar.index].output)}</div>
+              <div className="font-semibold mt-1.5 pt-1.5 border-t border-white/20">{formatTokens(chartData[hoveredBar.index].total)} total</div>
             </div>
           )}
         </div>
-        <div className="sparkline-summary">
-          <div className="sparkline-stat">
-            <span className="sparkline-stat-value">
-              {formatTokens(
-                chartData.length > 0
-                  ? chartData[chartData.length - 1]?.total || 0
-                  : 0,
-              )}
+        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex-1 text-center">
+            <span className="block text-base font-semibold">
+              {formatTokens(chartData.length > 0 ? chartData[chartData.length - 1]?.total || 0 : 0)}
             </span>
-            <span className="sparkline-stat-label">Today</span>
+            <span className="text-xs text-gray-500">Today</span>
           </div>
-          <div className="sparkline-stat">
-            <span className="sparkline-stat-value">
-              {formatTokens(
-                chartData.slice(-7).reduce((sum, d) => sum + d.total, 0),
-              )}
+          <div className="flex-1 text-center">
+            <span className="block text-base font-semibold">
+              {formatTokens(chartData.slice(-7).reduce((sum, d) => sum + d.total, 0))}
             </span>
-            <span className="sparkline-stat-label">This week</span>
+            <span className="text-xs text-gray-500">This week</span>
           </div>
-          <div className="sparkline-stat">
-            <span className="sparkline-stat-value">
-              {chartData.reduce(
-                (max, d, i) =>
-                  d.total > (chartData[max]?.total || 0) ? i : max,
-                0,
-              ) >= 0
-                ? chartData[
-                    chartData.reduce(
-                      (max, d, i) =>
-                        d.total > (chartData[max]?.total || 0) ? i : max,
-                      0,
-                    )
-                  ]?.date || "-"
+          <div className="flex-1 text-center">
+            <span className="block text-base font-semibold">
+              {chartData.reduce((max, d, i) => (d.total > (chartData[max]?.total || 0) ? i : max), 0) >= 0
+                ? chartData[chartData.reduce((max, d, i) => (d.total > (chartData[max]?.total || 0) ? i : max), 0)]?.date || "-"
                 : "-"}
             </span>
-            <span className="sparkline-stat-label">Peak day</span>
+            <span className="text-xs text-gray-500">Peak day</span>
           </div>
-          <div className="sparkline-stat">
-            <span className="sparkline-stat-value">
+          <div className="flex-1 text-center">
+            <span className="block text-base font-semibold">
               {(() => {
-                const thisWeek = chartData
-                  .slice(-7)
-                  .reduce((sum, d) => sum + d.total, 0);
-                const lastWeek = chartData
-                  .slice(-14, -7)
-                  .reduce((sum, d) => sum + d.total, 0);
+                const thisWeek = chartData.slice(-7).reduce((sum, d) => sum + d.total, 0);
+                const lastWeek = chartData.slice(-14, -7).reduce((sum, d) => sum + d.total, 0);
                 if (lastWeek === 0) return "-";
                 const change = ((thisWeek - lastWeek) / lastWeek) * 100;
                 return `${change >= 0 ? "▲" : "▼"} ${Math.abs(change).toFixed(0)}%`;
               })()}
             </span>
-            <span className="sparkline-stat-label">vs last week</span>
+            <span className="text-xs text-gray-500">vs last week</span>
           </div>
         </div>
       </div>
 
-      <div className="chart-section">
-        <h2>Activity heatmap</h2>
-        <div className="heatmap">
-          <div className="heatmap-hours">
+      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-5">
+        <h2 className="text-sm font-semibold mb-4">Activity heatmap</h2>
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-1 ml-8 mb-1">
             {Array.from({ length: 24 }, (_, i) => (
-              <span key={i} className="hour-label">
+              <span key={i} className="flex-1 text-center text-[10px] text-gray-500">
                 {i.toString().padStart(2, "0")}
               </span>
             ))}
           </div>
           {heatmapData.map((dayData, dayIdx) => (
-            <div key={dayIdx} className="heatmap-row">
-              <span className="day-label">{DAYS[dayIdx]}</span>
+            <div key={dayIdx} className="flex gap-1 items-center">
+              <span className="w-7 text-right pr-1 text-xs text-gray-500">{DAYS[dayIdx]}</span>
               {dayData.map((count, hourIdx) => (
                 <div
                   key={hourIdx}
-                  className="heatmap-cell"
+                  className="flex-1 aspect-square rounded cursor-pointer hover:scale-110 transition-transform min-h-4"
                   style={{
                     backgroundColor: count
                       ? `rgba(37, 99, 235, ${0.2 + (count / maxActivity) * 0.8})`
-                      : "#252525",
+                      : "rgb(38, 38, 38)",
                   }}
                   title={`${DAYS[dayIdx]} ${hourIdx}:00 - ${count} messages`}
                 />
@@ -305,9 +261,9 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="chart-section">
-        <h2>Top projects</h2>
-        <div className="chart-container">
+      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-5">
+        <h2 className="text-sm font-semibold mb-4">Top projects</h2>
+        <div className="w-full">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={stats.project_stats.slice(0, 10).map((p) => ({
@@ -318,24 +274,10 @@ export function Dashboard() {
               layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis
-                type="number"
-                stroke="#666"
-                fontSize={11}
-                tickFormatter={formatTokens}
-              />
-              <YAxis
-                type="category"
-                dataKey="name"
-                stroke="#666"
-                fontSize={11}
-                width={120}
-              />
+              <XAxis type="number" stroke="#666" fontSize={11} tickFormatter={formatTokens} />
+              <YAxis type="category" dataKey="name" stroke="#666" fontSize={11} width={120} />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1a1a1a",
-                  border: "1px solid #333",
-                }}
+                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
                 labelStyle={{ color: "#999" }}
                 formatter={(value) => [formatTokens(value as number), "Tokens"]}
               />

@@ -118,27 +118,27 @@ export function MessageRenderer({ content }: Props) {
   const blocks = parseContent(content);
 
   if (blocks.length === 0) {
-    return <div className="text-block">{content}</div>;
+    return <div className="whitespace-pre-wrap break-words">{content}</div>;
   }
 
   return (
-    <div className="message-blocks">
+    <div className="flex flex-col gap-3">
       {blocks.map((block, idx) => {
         if (block.type === "code") {
           const isAuto = block.language.includes("(auto)");
           const lang = block.language.replace(" (auto)", "");
           return (
-            <div key={idx} className="code-block-wrapper">
-              <div className="code-block-header">
-                <span className="code-language">{lang}</span>
-                {isAuto && <span className="auto-detected">auto-detected</span>}
+            <div key={idx} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+              <div className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <span>{lang}</span>
+                {isAuto && <span className="text-[9px] lowercase bg-gray-300 dark:bg-gray-600 px-1.5 py-0.5 rounded">auto-detected</span>}
               </div>
               <CodeBlock code={block.content} language={lang} />
             </div>
           );
         }
         return (
-          <div key={idx} className="text-block">
+          <div key={idx} className="whitespace-pre-wrap break-words">
             {block.content}
           </div>
         );
