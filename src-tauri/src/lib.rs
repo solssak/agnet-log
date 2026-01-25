@@ -124,7 +124,11 @@ fn get_sessions(project_path: String) -> Result<Vec<Session>, String> {
 
     for entry in entries.flatten() {
         let file_path = entry.path();
-        if file_path.extension().map(|ext| ext == "jsonl").unwrap_or(false) {
+        if file_path
+            .extension()
+            .map(|ext| ext == "jsonl")
+            .unwrap_or(false)
+        {
             let id = file_path
                 .file_stem()
                 .and_then(|n| n.to_str())
@@ -142,16 +146,18 @@ fn get_sessions(project_path: String) -> Result<Vec<Session>, String> {
                 })
                 .unwrap_or(0);
 
-            let (input_tokens, output_tokens) = calculate_tokens(&file_path);
+            let (input_tokens, output_tokens, message_count) = calculate_session_stats(&file_path);
 
-            sessions.push(Session {
-                id,
-                path: file_path.to_string_lossy().to_string(),
-                size,
-                modified,
-                input_tokens,
-                output_tokens,
-            });
+            if message_count > 0 {
+                sessions.push(Session {
+                    id,
+                    path: file_path.to_string_lossy().to_string(),
+                    size,
+                    modified,
+                    input_tokens,
+                    output_tokens,
+                });
+            }
         }
     }
 
@@ -160,19 +166,30 @@ fn get_sessions(project_path: String) -> Result<Vec<Session>, String> {
     Ok(sessions)
 }
 
-fn calculate_tokens(path: &PathBuf) -> (u64, u64) {
+fn calculate_session_stats(path: &PathBuf) -> (u64, u64, u32) {
     let content = match fs::read_to_string(path) {
         Ok(c) => c,
-        Err(_) => return (0, 0),
+        Err(_) => return (0, 0, 0),
     };
 
     let mut input_tokens = 0u64;
     let mut output_tokens = 0u64;
+    let mut message_count = 0u32;
 
     for line in content.lines() {
         if line.trim().is_empty() {
             continue;
         }
+
+        if let Ok(msg) = serde_json::from_str::<Message>(line) {
+            if let Some(ref msg_type) = msg.msg_type {
+                if (msg_type == "user" || msg_type == "assistant") && has_text_content(&msg.message)
+                {
+                    message_count += 1;
+                }
+            }
+        }
+
         if let Ok(msg) = serde_json::from_str::<RawMessage>(line) {
             if let Some(message) = msg.message {
                 if let Some(usage) = message.usage {
@@ -183,7 +200,7 @@ fn calculate_tokens(path: &PathBuf) -> (u64, u64) {
         }
     }
 
-    (input_tokens, output_tokens)
+    (input_tokens, output_tokens, message_count)
 }
 
 #[tauri::command]
@@ -204,13 +221,39 @@ fn get_messages(session_path: String) -> Result<Vec<Message>, String> {
         if let Ok(msg) = serde_json::from_str::<Message>(line) {
             if let Some(ref msg_type) = msg.msg_type {
                 if msg_type == "user" || msg_type == "assistant" {
-                    messages.push(msg);
+                    if has_text_content(&msg.message) {
+                        messages.push(msg);
+                    }
                 }
             }
         }
     }
 
     Ok(messages)
+}
+
+fn has_text_content(message: &Option<MessageContent>) -> bool {
+    let Some(msg) = message else {
+        return false;
+    };
+    let Some(content) = &msg.content else {
+        return false;
+    };
+
+    match content {
+        serde_json::Value::String(s) => !s.trim().is_empty(),
+        serde_json::Value::Array(arr) => arr.iter().any(|item| {
+            if item.get("type").and_then(|t| t.as_str()) == Some("text") {
+                item.get("text")
+                    .and_then(|t| t.as_str())
+                    .map(|s| !s.trim().is_empty())
+                    .unwrap_or(false)
+            } else {
+                false
+            }
+        }),
+        _ => false,
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -260,7 +303,11 @@ fn search_messages(query: String) -> Result<Vec<SearchResult>, String> {
 
         for session_entry in session_entries.flatten() {
             let session_path = session_entry.path();
-            if !session_path.extension().map(|e| e == "jsonl").unwrap_or(false) {
+            if !session_path
+                .extension()
+                .map(|e| e == "jsonl")
+                .unwrap_or(false)
+            {
                 continue;
             }
 
@@ -303,7 +350,11 @@ fn search_messages(query: String) -> Result<Vec<SearchResult>, String> {
                         session_id: session_id.clone(),
                         session_path: session_path.to_string_lossy().to_string(),
                         message_uuid: msg.uuid.unwrap_or_default(),
-                        role: msg.message.as_ref().and_then(|m| m.role.clone()).unwrap_or_default(),
+                        role: msg
+                            .message
+                            .as_ref()
+                            .and_then(|m| m.role.clone())
+                            .unwrap_or_default(),
                         content_preview: preview,
                         timestamp: msg.timestamp.unwrap_or_default(),
                     });
@@ -328,18 +379,17 @@ fn extract_text_content(message: &Option<MessageContent>) -> String {
 
     match content {
         serde_json::Value::String(s) => s.clone(),
-        serde_json::Value::Array(arr) => {
-            arr.iter()
-                .filter_map(|item| {
-                    if item.get("type")?.as_str()? == "text" {
-                        item.get("text")?.as_str().map(String::from)
-                    } else {
-                        None
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join("\n")
-        }
+        serde_json::Value::Array(arr) => arr
+            .iter()
+            .filter_map(|item| {
+                if item.get("type")?.as_str()? == "text" {
+                    item.get("text")?.as_str().map(String::from)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n"),
         _ => String::new(),
     }
 }
@@ -390,7 +440,10 @@ pub struct SessionContext {
 }
 
 #[tauri::command]
-fn get_session_context(session_path: String, project_name: String) -> Result<SessionContext, String> {
+fn get_session_context(
+    session_path: String,
+    project_name: String,
+) -> Result<SessionContext, String> {
     let path = PathBuf::from(&session_path);
 
     if !path.exists() {
@@ -411,7 +464,8 @@ fn get_session_context(session_path: String, project_name: String) -> Result<Ses
             Err(_) => continue,
         };
 
-        let timestamp = json.get("timestamp")
+        let timestamp = json
+            .get("timestamp")
             .and_then(|t| t.as_str())
             .unwrap_or("")
             .to_string();
@@ -420,7 +474,11 @@ fn get_session_context(session_path: String, project_name: String) -> Result<Ses
             timestamps.push(timestamp.clone());
         }
 
-        let content_arr = match json.get("message").and_then(|m| m.get("content")).and_then(|c| c.as_array()) {
+        let content_arr = match json
+            .get("message")
+            .and_then(|m| m.get("content"))
+            .and_then(|c| c.as_array())
+        {
             Some(arr) => arr,
             None => continue,
         };
@@ -434,8 +492,12 @@ fn get_session_context(session_path: String, project_name: String) -> Result<Ses
             let input = item.get("input");
 
             let file_path = match tool_name {
-                "Edit" | "Write" => input.and_then(|i| i.get("file_path")).and_then(|f| f.as_str()),
-                "mcp_edit" | "mcp_write" => input.and_then(|i| i.get("filePath")).and_then(|f| f.as_str()),
+                "Edit" | "Write" => input
+                    .and_then(|i| i.get("file_path"))
+                    .and_then(|f| f.as_str()),
+                "mcp_edit" | "mcp_write" => input
+                    .and_then(|i| i.get("filePath"))
+                    .and_then(|f| f.as_str()),
                 _ => None,
             };
 
@@ -586,7 +648,8 @@ fn get_dashboard_stats() -> Result<DashboardStats, String> {
     let mut total_messages = 0u32;
     let mut total_session_duration_secs = 0i64;
     let mut sessions_with_duration = 0u32;
-    let mut daily_map: std::collections::HashMap<String, DailyStats> = std::collections::HashMap::new();
+    let mut daily_map: std::collections::HashMap<String, DailyStats> =
+        std::collections::HashMap::new();
     let mut hourly_map: std::collections::HashMap<(u8, u8), u32> = std::collections::HashMap::new();
     let mut project_stats: Vec<ProjectStats> = vec![];
 
@@ -617,7 +680,11 @@ fn get_dashboard_stats() -> Result<DashboardStats, String> {
 
         for session_entry in session_entries.flatten() {
             let session_path = session_entry.path();
-            if !session_path.extension().map(|e| e == "jsonl").unwrap_or(false) {
+            if !session_path
+                .extension()
+                .map(|e| e == "jsonl")
+                .unwrap_or(false)
+            {
                 continue;
             }
 
@@ -672,9 +739,15 @@ fn get_dashboard_stats() -> Result<DashboardStats, String> {
                 }
 
                 if let Some(usage) = json.get("message").and_then(|m| m.get("usage")) {
-                    let input = usage.get("input_tokens").and_then(|t| t.as_u64()).unwrap_or(0);
-                    let output = usage.get("output_tokens").and_then(|t| t.as_u64()).unwrap_or(0);
-                    
+                    let input = usage
+                        .get("input_tokens")
+                        .and_then(|t| t.as_u64())
+                        .unwrap_or(0);
+                    let output = usage
+                        .get("output_tokens")
+                        .and_then(|t| t.as_u64())
+                        .unwrap_or(0);
+
                     total_input_tokens += input;
                     total_output_tokens += output;
                     proj_input += input;
@@ -725,9 +798,13 @@ fn get_dashboard_stats() -> Result<DashboardStats, String> {
         .collect();
     hourly_activity.sort_by(|a, b| (a.day, a.hour).cmp(&(b.day, b.hour)));
 
-    project_stats.sort_by(|a, b| (b.total_input_tokens + b.total_output_tokens).cmp(&(a.total_input_tokens + a.total_output_tokens)));
+    project_stats.sort_by(|a, b| {
+        (b.total_input_tokens + b.total_output_tokens)
+            .cmp(&(a.total_input_tokens + a.total_output_tokens))
+    });
 
-    let estimated_cost = (total_input_tokens as f64 * 0.003 / 1000.0) + (total_output_tokens as f64 * 0.015 / 1000.0);
+    let estimated_cost = (total_input_tokens as f64 * 0.003 / 1000.0)
+        + (total_output_tokens as f64 * 0.015 / 1000.0);
 
     let avg_session_minutes = if sessions_with_duration > 0 {
         (total_session_duration_secs as f64 / sessions_with_duration as f64) / 60.0
@@ -752,7 +829,14 @@ fn get_dashboard_stats() -> Result<DashboardStats, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_projects, get_sessions, get_messages, search_messages, get_session_context, get_dashboard_stats])
+        .invoke_handler(tauri::generate_handler![
+            get_projects,
+            get_sessions,
+            get_messages,
+            search_messages,
+            get_session_context,
+            get_dashboard_stats
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
