@@ -248,8 +248,8 @@ function App() {
   }
 
   return (
-    <main className={`flex h-screen overflow-hidden bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 ${sidebarTab === "profile" ? "block" : ""}`}>
-<div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 p-1 bg-gray-200/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-300/50 dark:border-white/10 shadow-lg">
+    <main className={`flex h-screen overflow-hidden bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${sidebarTab === "profile" ? "block" : ""}`}>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 p-1 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-white/10 shadow-lg">
         <button
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
             sidebarTab === "profile"
@@ -264,7 +264,7 @@ function App() {
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
             sidebarTab === "browse"
               ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700"
+              : "text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800"
           }`}
           onClick={() => setSidebarTab("browse")}
         >
@@ -280,12 +280,12 @@ function App() {
 
       {sidebarTab === "browse" && (
 <>
-          <div className="w-80 border-r border-gray-300 dark:border-gray-700 flex flex-col overflow-hidden bg-gray-200 dark:bg-gray-800">
+          <div className="w-80 border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
 <div className="flex-1 overflow-y-auto">
               <form className="p-3 border-b border-gray-300 dark:border-gray-700" onSubmit={handleSearch}>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 text-sm bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-gray-400 dark:focus:border-gray-600"
                   placeholder="Search messages"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -301,14 +301,14 @@ function App() {
                     {searchResults.map((result, idx) => (
                       <div
                         key={idx}
-                        className="px-4 py-3 cursor-pointer border-b border-gray-200 dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800"
+                        className="px-4 py-3 cursor-pointer border-b border-gray-200 dark:border-gray-800 hover:bg-white dark:hover:bg-gray-800"
                         onClick={() => openSearchResult(result)}
                       >
                         <div className="flex justify-between items-center mb-1">
                           <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
                             result.role === "user"
-                              ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                              : "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300"
+                              ? "bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                              : "bg-gray-400 text-gray-900 dark:bg-gray-600 dark:text-gray-200"
                           }`}>
                             {result.role}
                           </span>
@@ -338,13 +338,13 @@ function App() {
                 {projects.map((project) => (
                   <div
                     key={project.path}
-                    className={`px-4 py-3 cursor-pointer flex justify-between items-center border-b border-gray-200 dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800 ${
-                      selectedProject?.path === project.path ? "bg-blue-50 dark:bg-blue-900/30" : ""
+                    className={`px-4 py-3 cursor-pointer flex justify-between items-center border-b border-gray-200 dark:border-gray-800 hover:bg-white dark:hover:bg-gray-800 ${
+                      selectedProject?.path === project.path ? "bg-white dark:bg-gray-800" : ""
                     }`}
                     onClick={() => loadSessions(project)}
                   >
                     <span className="text-sm font-medium truncate flex-1">{project.name}</span>
-                    <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full ml-2">
+                    <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full ml-2">
                       {project.session_count}
                     </span>
                   </div>
@@ -360,8 +360,8 @@ function App() {
                     {sessions.map((session) => (
                       <div
                         key={session.id}
-                        className={`px-4 py-3 cursor-pointer border-b border-gray-200 dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800 ${
-                          selectedSession?.id === session.id ? "bg-blue-50 dark:bg-blue-900/30" : ""
+                        className={`px-4 py-3 cursor-pointer border-b border-gray-200 dark:border-gray-800 hover:bg-white dark:hover:bg-gray-800 ${
+                          selectedSession?.id === session.id ? "bg-white dark:bg-gray-800" : ""
                         }`}
                         onClick={() => loadMessages(session)}
                       >
@@ -402,8 +402,8 @@ function App() {
                         key={mode}
                         className={`px-3 py-1.5 text-xs font-medium rounded-lg border ${
                           viewMode === mode
-                            ? "bg-blue-500 border-blue-500 text-white"
-                            : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            ? "bg-gray-700 border-gray-700 text-white dark:bg-gray-300 dark:border-gray-300 dark:text-gray-900"
+                            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                         }`}
                         onClick={() => {
                           setViewMode(mode);
@@ -423,13 +423,13 @@ function App() {
                         key={msg.uuid || idx}
                         className={`max-w-[85%] px-4 py-3 rounded-2xl ${
                           msg.message?.role === "user"
-                            ? "self-end bg-blue-500 text-white rounded-br-sm"
-                            : "self-start bg-gray-200 dark:bg-gray-800 rounded-bl-sm"
+                            ? "self-end bg-gray-700 text-white rounded-br-sm dark:bg-gray-600"
+                            : "self-start bg-white dark:bg-gray-800 rounded-bl-sm border border-gray-200 dark:border-gray-700"
                         }`}
                       >
                         <div className="flex justify-between items-center gap-3 mb-1.5">
                           <span className={`text-xs font-semibold uppercase opacity-70 ${
-                            msg.message?.role === "user" ? "text-white/80" : "text-green-600 dark:text-green-400"
+                            msg.message?.role === "user" ? "text-white/80" : "text-gray-600 dark:text-gray-400"
                           }`}>
                             {msg.message?.role}
                           </span>
@@ -450,26 +450,26 @@ function App() {
 {viewMode === "snippets" && (
                   <div className="flex flex-col gap-4">
                     {extractCodeSnippets().map((snippet, idx) => (
-                      <div key={idx} className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800">
-                          <span className="text-xs font-semibold uppercase text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
+                      <div key={idx} className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800">
+                          <span className="text-xs font-semibold uppercase text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
                             {snippet.language}
                           </span>
                           <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
                             snippet.role === "user"
-                              ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                              : "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300"
+                              ? "bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                              : "bg-gray-400 text-gray-900 dark:bg-gray-600 dark:text-gray-200"
                           }`}>
                             {snippet.role}
                           </span>
                           <button
-                            className="ml-auto px-2.5 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                            className="ml-auto px-2.5 py-1 text-xs font-medium bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
                             onClick={() => copyToClipboard(snippet.code)}
                           >
                             Copy
                           </button>
                         </div>
-                        <pre className="p-3 bg-gray-200 dark:bg-gray-900 text-sm leading-relaxed overflow-x-auto font-mono">
+                        <pre className="p-3 bg-gray-50 dark:bg-gray-950 text-sm leading-relaxed overflow-x-auto font-mono">
                           {snippet.code}
                         </pre>
                       </div>
@@ -488,11 +488,11 @@ function App() {
                           <p className="text-sm text-gray-400 italic">No file modifications found.</p>
                         ) : (
                           [...new Map(sessionContext.file_changes.map((f) => [f.file_path, f])).values()].map((change, idx) => (
-                            <div key={idx} className="flex items-center gap-2.5 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                            <div key={idx} className="flex items-center gap-2.5 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                               <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
                                 change.action.toLowerCase().includes("edit")
-                                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
-                                  : "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300"
+                                  ? "bg-gray-400 text-gray-900 dark:bg-gray-600 dark:text-gray-200"
+                                  : "bg-gray-500 text-white dark:bg-gray-500 dark:text-gray-100"
                               }`}>
                                 {change.action}
                               </span>
@@ -512,16 +512,16 @@ function App() {
                           <p className="text-sm text-gray-400 italic">No commits found in this time range.</p>
                         ) : (
                           sessionContext.git_commits.map((commit, idx) => (
-                            <div key={idx} className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border-l-3 border-blue-500">
+                            <div key={idx} className="p-3 bg-white dark:bg-gray-800 rounded-lg border-l-3 border-gray-500">
                               <div className="flex items-center gap-2.5 mb-2">
-                                <span className="text-xs font-mono bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400">
+                                <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400">
                                   {commit.hash.slice(0, 7)}
                                 </span>
                                 <span className="text-sm font-medium">{commit.message}</span>
                               </div>
                               <div className="flex flex-wrap gap-1.5">
                                 {commit.files.map((file, fidx) => (
-                                  <span key={fidx} className="text-xs font-mono bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400">
+                                  <span key={fidx} className="text-xs font-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400">
                                     {file}
                                   </span>
                                 ))}
@@ -549,7 +549,7 @@ function App() {
             )}
 
             {copyFeedback && (
-              <div className="fixed bottom-6 right-6 px-5 py-2.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-medium animate-pulse">
+              <div className="fixed bottom-6 right-6 px-5 py-2.5 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg text-sm font-medium animate-pulse shadow-lg">
                 {copyFeedback}
               </div>
             )}

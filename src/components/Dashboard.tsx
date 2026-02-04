@@ -120,7 +120,7 @@ export function Dashboard() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
-        <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Tokens</div>
           <div className="flex items-baseline gap-2 mb-2">
             <span className="text-sm text-gray-500">↓</span>
@@ -133,7 +133,7 @@ export function Dashboard() {
             <span className="text-sm text-gray-500">output</span>
           </div>
         </div>
-        <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Activity</div>
           <div className="flex items-baseline gap-2 mb-2">
             <span className="text-xl font-bold">{stats.total_sessions.toLocaleString()}</span>
@@ -150,12 +150,12 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-center text-white">
+      <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-6 text-center text-white">
         <div className="text-4xl font-bold mb-1">${stats.estimated_cost.toFixed(2)}</div>
         <div className="text-sm opacity-85">Estimated cost</div>
       </div>
 
-      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm text-gray-500">Token usage (30d)</span>
           <span className="text-lg font-bold">{formatTokens(chartData.reduce((sum, d) => sum + d.total, 0))}</span>
@@ -168,7 +168,7 @@ export function Dashboard() {
               return (
                 <div
                   key={i}
-                  className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t cursor-pointer hover:from-blue-600 hover:to-blue-500 transition-all"
+                  className="flex-1 bg-gradient-to-t from-gray-600 to-gray-500 rounded-t cursor-pointer hover:from-gray-700 hover:to-gray-600 transition-all"
                   style={{ height: `${Math.max(height, 4)}%` }}
                   onMouseEnter={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -185,7 +185,7 @@ export function Dashboard() {
           </div>
           {hoveredBar && chartData[hoveredBar.index] && (
             <div
-              className="absolute bottom-full mb-2 -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg"
+              className="absolute bottom-full mb-2 -translate-x-1/2 bg-gray-800 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg border border-gray-700"
               style={{ left: `${(hoveredBar.index / chartData.length) * 100}%` }}
             >
               <div className="font-semibold mb-1.5 pb-1.5 border-b border-white/20">{chartData[hoveredBar.index].date}</div>
@@ -231,7 +231,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-5">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
         <h2 className="text-sm font-semibold mb-4">Activity heatmap</h2>
         <div className="flex flex-col gap-1">
           <div className="flex gap-1 ml-8 mb-1">
@@ -250,7 +250,7 @@ export function Dashboard() {
                   className="flex-1 aspect-square rounded cursor-pointer hover:scale-110 transition-transform min-h-4"
                   style={{
                     backgroundColor: count
-                      ? `rgba(37, 99, 235, ${0.2 + (count / maxActivity) * 0.8})`
+                      ? `rgba(107, 114, 128, ${0.2 + (count / maxActivity) * 0.8})`
                       : "rgb(38, 38, 38)",
                   }}
                   title={`${DAYS[dayIdx]} ${hourIdx}:00 - ${count} messages`}
@@ -261,7 +261,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-5">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
         <h2 className="text-sm font-semibold mb-4">Top projects</h2>
         <div className="w-full">
           <ResponsiveContainer width="100%" height={300}>
@@ -281,7 +281,7 @@ export function Dashboard() {
                 labelStyle={{ color: "#999" }}
                 formatter={(value) => [formatTokens(value as number), "Tokens"]}
               />
-              <Bar dataKey="tokens" fill="#2563eb" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="tokens" fill="#6b7280" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
