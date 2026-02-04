@@ -86,7 +86,9 @@ export function Dashboard() {
   if (loading) {
     return (
       <div className="flex flex-col gap-5">
-        <div className="flex justify-center items-center h-64 text-zinc-500">Loading statistics...</div>
+        <div className="flex justify-center items-center h-64 text-zinc-500">
+          Loading statistics...
+        </div>
       </div>
     );
   }
@@ -94,7 +96,9 @@ export function Dashboard() {
   if (!stats) {
     return (
       <div className="flex flex-col gap-5">
-        <div className="flex justify-center items-center h-64 text-zinc-500">Failed to load statistics</div>
+        <div className="flex justify-center items-center h-64 text-zinc-500">
+          Failed to load statistics
+        </div>
       </div>
     );
   }
@@ -121,44 +125,62 @@ export function Dashboard() {
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
         <div className="flex-1 bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
-          <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">Tokens</div>
+          <div className="text-xs font-semibold text-zinc-500 tracking-wide mb-3">
+            Tokens
+          </div>
           <div className="flex items-baseline gap-2 mb-2">
             <span className="text-sm text-zinc-500">↓</span>
-            <span className="text-xl font-bold">{formatTokens(stats.total_input_tokens)}</span>
+            <span className="text-xl font-bold">
+              {formatTokens(stats.total_input_tokens)}
+            </span>
             <span className="text-sm text-zinc-500">input</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-sm text-zinc-500">↑</span>
-            <span className="text-xl font-bold">{formatTokens(stats.total_output_tokens)}</span>
+            <span className="text-xl font-bold">
+              {formatTokens(stats.total_output_tokens)}
+            </span>
             <span className="text-sm text-zinc-500">output</span>
           </div>
         </div>
         <div className="flex-1 bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
-          <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">Activity</div>
+          <div className="text-xs font-semibold text-zinc-500 tracking-wide mb-3">
+            Activity
+          </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-xl font-bold">{stats.total_sessions.toLocaleString()}</span>
+            <span className="text-xl font-bold">
+              {stats.total_sessions.toLocaleString()}
+            </span>
             <span className="text-sm text-zinc-500">sessions</span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-xl font-bold">{stats.total_messages.toLocaleString()}</span>
+            <span className="text-xl font-bold">
+              {stats.total_messages.toLocaleString()}
+            </span>
             <span className="text-sm text-zinc-500">messages</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold">{formatDuration(stats.avg_session_minutes)}</span>
+            <span className="text-xl font-bold">
+              {formatDuration(stats.avg_session_minutes)}
+            </span>
             <span className="text-sm text-zinc-500">avg time</span>
           </div>
         </div>
       </div>
 
       <div className="bg-gradient-to-br from-teal-600 to-teal-700 rounded-xl p-6 text-center text-white shadow-lg">
-        <div className="text-4xl font-bold mb-1">${stats.estimated_cost.toFixed(2)}</div>
+        <div className="text-4xl font-bold mb-1">
+          ${stats.estimated_cost.toFixed(2)}
+        </div>
         <div className="text-sm opacity-85">Estimated cost</div>
       </div>
 
       <div className="bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm text-zinc-500">Token usage (30d)</span>
-          <span className="text-lg font-bold">{formatTokens(chartData.reduce((sum, d) => sum + d.total, 0))}</span>
+          <span className="text-lg font-bold">
+            {formatTokens(chartData.reduce((sum, d) => sum + d.total, 0))}
+          </span>
         </div>
         <div className="relative">
           <div className="flex items-end gap-0.5 h-12">
@@ -186,32 +208,58 @@ export function Dashboard() {
           {hoveredBar && chartData[hoveredBar.index] && (
             <div
               className="absolute bottom-full mb-2 -translate-x-1/2 bg-zinc-800 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg border border-zinc-700"
-              style={{ left: `${(hoveredBar.index / chartData.length) * 100}%` }}
+              style={{
+                left: `${(hoveredBar.index / chartData.length) * 100}%`,
+              }}
             >
-              <div className="font-semibold mb-1.5 pb-1.5 border-b border-white/20">{chartData[hoveredBar.index].date}</div>
-              <div className="text-zinc-300 mb-0.5">↓ {formatTokens(chartData[hoveredBar.index].input)}</div>
-              <div className="text-zinc-300 mb-0.5">↑ {formatTokens(chartData[hoveredBar.index].output)}</div>
-              <div className="font-semibold mt-1.5 pt-1.5 border-t border-white/20">{formatTokens(chartData[hoveredBar.index].total)} total</div>
+              <div className="font-semibold mb-1.5 pb-1.5 border-b border-white/20">
+                {chartData[hoveredBar.index].date}
+              </div>
+              <div className="text-zinc-300 mb-0.5">
+                ↓ {formatTokens(chartData[hoveredBar.index].input)}
+              </div>
+              <div className="text-zinc-300 mb-0.5">
+                ↑ {formatTokens(chartData[hoveredBar.index].output)}
+              </div>
+              <div className="font-semibold mt-1.5 pt-1.5 border-t border-white/20">
+                {formatTokens(chartData[hoveredBar.index].total)} total
+              </div>
             </div>
           )}
         </div>
         <div className="flex gap-2 mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <div className="flex-1 text-center">
             <span className="block text-base font-semibold">
-              {formatTokens(chartData.length > 0 ? chartData[chartData.length - 1]?.total || 0 : 0)}
+              {formatTokens(
+                chartData.length > 0
+                  ? chartData[chartData.length - 1]?.total || 0
+                  : 0,
+              )}
             </span>
             <span className="text-xs text-zinc-500">Today</span>
           </div>
           <div className="flex-1 text-center">
             <span className="block text-base font-semibold">
-              {formatTokens(chartData.slice(-7).reduce((sum, d) => sum + d.total, 0))}
+              {formatTokens(
+                chartData.slice(-7).reduce((sum, d) => sum + d.total, 0),
+              )}
             </span>
             <span className="text-xs text-zinc-500">This week</span>
           </div>
           <div className="flex-1 text-center">
             <span className="block text-base font-semibold">
-              {chartData.reduce((max, d, i) => (d.total > (chartData[max]?.total || 0) ? i : max), 0) >= 0
-                ? chartData[chartData.reduce((max, d, i) => (d.total > (chartData[max]?.total || 0) ? i : max), 0)]?.date || "-"
+              {chartData.reduce(
+                (max, d, i) =>
+                  d.total > (chartData[max]?.total || 0) ? i : max,
+                0,
+              ) >= 0
+                ? chartData[
+                    chartData.reduce(
+                      (max, d, i) =>
+                        d.total > (chartData[max]?.total || 0) ? i : max,
+                      0,
+                    )
+                  ]?.date || "-"
                 : "-"}
             </span>
             <span className="text-xs text-zinc-500">Peak day</span>
@@ -219,8 +267,12 @@ export function Dashboard() {
           <div className="flex-1 text-center">
             <span className="block text-base font-semibold">
               {(() => {
-                const thisWeek = chartData.slice(-7).reduce((sum, d) => sum + d.total, 0);
-                const lastWeek = chartData.slice(-14, -7).reduce((sum, d) => sum + d.total, 0);
+                const thisWeek = chartData
+                  .slice(-7)
+                  .reduce((sum, d) => sum + d.total, 0);
+                const lastWeek = chartData
+                  .slice(-14, -7)
+                  .reduce((sum, d) => sum + d.total, 0);
                 if (lastWeek === 0) return "-";
                 const change = ((thisWeek - lastWeek) / lastWeek) * 100;
                 return `${change >= 0 ? "▲" : "▼"} ${Math.abs(change).toFixed(0)}%`;
@@ -236,14 +288,19 @@ export function Dashboard() {
         <div className="flex flex-col gap-1">
           <div className="flex gap-1 ml-8 mb-1">
             {Array.from({ length: 24 }, (_, i) => (
-              <span key={i} className="flex-1 text-center text-[10px] text-zinc-500">
+              <span
+                key={i}
+                className="flex-1 text-center text-[10px] text-zinc-500"
+              >
                 {i.toString().padStart(2, "0")}
               </span>
             ))}
           </div>
           {heatmapData.map((dayData, dayIdx) => (
             <div key={dayIdx} className="flex gap-1 items-center">
-              <span className="w-7 text-right pr-1 text-xs text-zinc-500">{DAYS[dayIdx]}</span>
+              <span className="w-7 text-right pr-1 text-xs text-zinc-500">
+                {DAYS[dayIdx]}
+              </span>
               {dayData.map((count, hourIdx) => (
                 <div
                   key={hourIdx}
@@ -274,10 +331,24 @@ export function Dashboard() {
               layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis type="number" stroke="#666" fontSize={11} tickFormatter={formatTokens} />
-              <YAxis type="category" dataKey="name" stroke="#666" fontSize={11} width={120} />
+              <XAxis
+                type="number"
+                stroke="#666"
+                fontSize={11}
+                tickFormatter={formatTokens}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                stroke="#666"
+                fontSize={11}
+                width={120}
+              />
               <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
+                contentStyle={{
+                  backgroundColor: "#1a1a1a",
+                  border: "1px solid #333",
+                }}
                 labelStyle={{ color: "#999" }}
                 formatter={(value) => [formatTokens(value as number), "Tokens"]}
               />

@@ -14,11 +14,11 @@ export const CodeSnippetsView = ({ snippets, onCopy }: Props) => {
           className="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden bg-white dark:bg-zinc-900"
         >
           <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 dark:bg-zinc-800">
-            <span className="text-xs font-semibold uppercase text-zinc-500 bg-zinc-100 dark:bg-zinc-700 px-2 py-0.5 rounded">
+            <span className="text-xs font-semibold text-zinc-500 bg-zinc-100 dark:bg-zinc-700 px-2 py-0.5 rounded">
               {snippet.language}
             </span>
             <span
-              className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
+              className={`text-xs font-semibold  px-2 py-0.5 rounded ${
                 snippet.role === "user"
                   ? "bg-zinc-300 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300"
                   : "bg-zinc-400 text-zinc-900 dark:bg-zinc-600 dark:text-zinc-200"

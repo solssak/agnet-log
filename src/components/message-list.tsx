@@ -20,13 +20,13 @@ export const MessageList = ({ messages }: Props) => {
         >
           <div className="flex justify-between items-center gap-3 mb-1.5">
             <span
-              className={`text-xs font-semibold uppercase opacity-70 ${
+              className={`text-xs font-semibold opacity-70 ${
                 msg.message?.role === "user"
                   ? "text-white/80"
                   : "text-zinc-600 dark:text-zinc-400"
               }`}
             >
-              {msg.message?.role}
+              {msg.message?.role && msg.message.role.charAt(0).toUpperCase() + msg.message.role.slice(1)}
             </span>
             <span
               className={`text-[10px] opacity-60 ${
