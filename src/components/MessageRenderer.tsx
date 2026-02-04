@@ -128,10 +128,10 @@ export function MessageRenderer({ content }: Props) {
           const isAuto = block.language.includes("(auto)");
           const lang = block.language.replace(" (auto)", "");
           return (
-            <div key={idx} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-              <div className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+            <div key={idx} className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+              <div className="px-3 py-1.5 bg-zinc-50 dark:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
                 <span>{lang}</span>
-                {isAuto && <span className="text-[9px] lowercase bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded">auto-detected</span>}
+                {isAuto && <span className="text-[9px] lowercase bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded">auto-detected</span>}
               </div>
               <CodeBlock code={block.content} language={lang} />
             </div>
