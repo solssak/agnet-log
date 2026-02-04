@@ -413,7 +413,7 @@ function App() {
             </div>
           </div>
 
-<div ref={browseScrollRef} className="flex-1 overflow-y-auto p-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
+<div ref={browseScrollRef} className="flex-1 w-full overflow-y-auto p-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
             {loading && (
               <div className="flex justify-center items-center h-full text-zinc-500">
                 Loading...
@@ -449,14 +449,14 @@ function App() {
                 </div>
 
                 {viewMode === "messages" && (
-                  <div className="flex flex-col gap-3 w-full">
+                  <div className="flex flex-col gap-3">
                     {messages.map((msg, idx) => (
                       <div
                         key={msg.uuid || idx}
-                        className={`w-full px-4 py-3 rounded-2xl ${
+                        className={`max-w-[85%] px-4 py-3 rounded-2xl ${
                           msg.message?.role === "user"
-                            ? "bg-zinc-700 text-white dark:bg-zinc-600"
-                            : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"
+                            ? "self-end bg-zinc-700 text-white rounded-br-sm dark:bg-zinc-600"
+                            : "self-start bg-white dark:bg-zinc-800 rounded-bl-sm border border-zinc-200 dark:border-zinc-700"
                         }`}
                       >
                         <div className="flex justify-between items-center gap-3 mb-1.5">
