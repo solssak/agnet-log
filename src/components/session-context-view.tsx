@@ -1,4 +1,5 @@
 import type { SessionContext } from "../types";
+import { cn } from "../utils/cn";
 
 type Props = {
   sessionContext: SessionContext;
@@ -27,11 +28,12 @@ export const SessionContextView = ({ sessionContext }: Props) => {
                 className="flex items-center gap-2.5 px-3 py-2 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700"
               >
                 <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                  className={cn(
+                    "text-xs font-semibold px-2 py-0.5 rounded",
                     change.action.toLowerCase().includes("edit")
                       ? "bg-zinc-400 text-zinc-900 dark:bg-zinc-600 dark:text-zinc-200"
                       : "bg-zinc-500 text-white dark:bg-zinc-500 dark:text-zinc-100"
-                  }`}
+                  )}
                 >
                   {change.action}
                 </span>

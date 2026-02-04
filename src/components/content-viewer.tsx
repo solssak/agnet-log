@@ -3,6 +3,7 @@ import { extractCodeSnippets } from "../utils/message";
 import { MessageList } from "./message-list";
 import { CodeSnippetsView } from "./code-snippets-view";
 import { SessionContextView } from "./session-context-view";
+import { cn } from "../utils/cn";
 
 type Props = {
   viewMode: ViewMode;
@@ -35,11 +36,12 @@ export const ContentViewer = ({
           {(["messages", "snippets", "context"] as const).map((mode) => (
             <button
               key={mode}
-              className={`px-3 py-1.5 text-xs font-mono font-medium rounded-lg border ${
+              className={cn(
+                "px-3 py-1.5 text-xs font-mono font-medium rounded-lg border",
                 viewMode === mode
                   ? "bg-teal-500 border-teal-500 text-white hover:bg-teal-600"
                   : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
-              }`}
+              )}
               onClick={() => {
                 setViewMode(mode);
                 if (mode === "context" && !sessionContext) onLoadContext();

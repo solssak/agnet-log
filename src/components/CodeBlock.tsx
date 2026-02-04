@@ -1,4 +1,5 @@
 import { Highlight, themes } from "prism-react-renderer";
+import { cn } from "../utils/cn";
 
 type Props = {
   code: string;
@@ -16,7 +17,7 @@ export function CodeBlock({ code, language }: Props) {
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className={`${className} m-0 p-3 text-[13px] leading-relaxed overflow-x-auto max-w-full`}
+          className={cn(className, "m-0 p-3 text-[13px] leading-relaxed overflow-x-auto max-w-full")}
           style={style}
         >
           {tokens.map((line, i) => (

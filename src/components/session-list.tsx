@@ -1,5 +1,6 @@
 import type { Session } from "../types";
 import { formatDate, formatTokens } from "../utils/format";
+import { cn } from "../utils/cn";
 
 type Props = {
   sessions: Session[];
@@ -21,11 +22,10 @@ export const SessionList = ({
         {sessions.map((session) => (
           <div
             key={session.id}
-            className={`px-4 py-3 cursor-pointer border-b border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800 ${
-              selectedSession?.id === session.id
-                ? "bg-white dark:bg-zinc-800"
-                : ""
-            }`}
+            className={cn(
+              "px-4 py-3 cursor-pointer border-b border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800",
+              selectedSession?.id === session.id && "bg-white dark:bg-zinc-800"
+            )}
             onClick={() => onSessionClick(session)}
           >
             <div className="flex flex-col gap-1">

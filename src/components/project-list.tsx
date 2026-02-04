@@ -1,4 +1,5 @@
 import type { Project } from "../types";
+import { cn } from "../utils/cn";
 
 type Props = {
   projects: Project[];
@@ -20,11 +21,10 @@ export const ProjectList = ({
         {projects.map((project) => (
           <div
             key={project.path}
-            className={`px-4 py-3 cursor-pointer flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800 ${
-              selectedProject?.path === project.path
-                ? "bg-white dark:bg-zinc-800"
-                : ""
-            }`}
+            className={cn(
+              "px-4 py-3 cursor-pointer flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800",
+              selectedProject?.path === project.path && "bg-white dark:bg-zinc-800"
+            )}
             onClick={() => onProjectClick(project)}
           >
             <span className="text-sm font-medium truncate flex-1">

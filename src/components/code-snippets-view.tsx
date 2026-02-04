@@ -1,4 +1,5 @@
 import type { CodeSnippet } from "../types";
+import { cn } from "../utils/cn";
 
 type Props = {
   snippets: CodeSnippet[];
@@ -18,11 +19,12 @@ export const CodeSnippetsView = ({ snippets, onCopy }: Props) => {
               {snippet.language}
             </span>
             <span
-              className={`text-xs font-semibold  px-2 py-0.5 rounded ${
+              className={cn(
+                "text-xs font-semibold px-2 py-0.5 rounded",
                 snippet.role === "user"
                   ? "bg-zinc-300 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300"
                   : "bg-zinc-400 text-zinc-900 dark:bg-zinc-600 dark:text-zinc-200"
-              }`}
+              )}
             >
               {snippet.role}
             </span>

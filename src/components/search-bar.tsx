@@ -1,4 +1,5 @@
 import type { SearchResult } from "../types";
+import { cn } from "../utils/cn";
 
 type Props = {
   searchQuery: string;
@@ -46,11 +47,12 @@ export const SearchBar = ({
               >
                 <div className="flex justify-between items-center mb-1">
                   <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                    className={cn(
+                      "text-xs font-semibold px-2 py-0.5 rounded",
                       result.role === "user"
                         ? "bg-zinc-300 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300"
                         : "bg-zinc-400 text-zinc-900 dark:bg-zinc-600 dark:text-zinc-200"
-                    }`}
+                    )}
                   >
                     {result.role}
                   </span>

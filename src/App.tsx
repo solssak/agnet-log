@@ -7,6 +7,7 @@ import { BackgroundGradient } from "./components/background-gradient";
 import { Sidebar } from "./components/sidebar";
 import { ContentViewer } from "./components/content-viewer";
 import { CopyFeedback } from "./components/copy-feedback";
+import { cn } from "./utils/cn";
 import type {
   Project,
   Session,
@@ -154,7 +155,10 @@ function App() {
 
   return (
     <main
-      className={`flex h-screen overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 ${sidebarTab === "profile" ? "block" : ""}`}
+      className={cn(
+        "flex h-screen overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100",
+        sidebarTab === "profile" && "block"
+      )}
     >
       <TabSwitcher
         sidebarTab={sidebarTab}
