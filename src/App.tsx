@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { MessageRenderer } from "./components/MessageRenderer";
 import { Dashboard } from "./components/Dashboard";
+import { useScrollPosition } from "./hooks/useScrollPosition";
 
 type Project = {
   name: string;
@@ -80,6 +81,12 @@ function App() {
     null,
   );
   const [sidebarTab, setSidebarTab] = useState<"profile" | "browse">("browse");
+  
+  const profileScrollRef = useRef<HTMLDivElement>(null);
+  const browseScrollRef = useRef<HTMLDivElement>(null);
+  
+  const activeScrollRef = sidebarTab === "profile" ? profileScrollRef : browseScrollRef;
+  const { isAtTop } = useScrollPosition(activeScrollRef);
 
   useEffect(() => {
     loadProjects();
@@ -249,7 +256,9 @@ function App() {
 
   return (
     <main className={`flex h-screen overflow-hidden bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${sidebarTab === "profile" ? "block" : ""}`}>
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 p-1 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-white/10 shadow-lg">
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 p-1 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-white/10 shadow-lg transition-all duration-300 ${
+          isAtTop ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-20 pointer-events-none"
+        }`}>
         <button
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
             sidebarTab === "profile"
@@ -273,7 +282,7 @@ function App() {
       </div>
 
       {sidebarTab === "profile" && (
-        <div className="pt-18 px-6 pb-6 max-w-4xl mx-auto overflow-y-auto h-screen">
+        <div ref={profileScrollRef} className="pt-18 px-6 pb-6 max-w-4xl mx-auto overflow-y-auto h-screen">
           <Dashboard />
         </div>
       )}
@@ -381,7 +390,7 @@ function App() {
             </div>
           </div>
 
-<div className="flex-1 overflow-y-auto p-6">
+<div ref={browseScrollRef} className="flex-1 overflow-y-auto p-6">
             {loading && (
               <div className="flex justify-center items-center h-full text-gray-500">
                 Loading...
