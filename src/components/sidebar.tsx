@@ -33,7 +33,7 @@ export const Sidebar = ({
   onSessionClick,
 }: Props) => {
   return (
-    <div className="w-80 flex flex-col overflow-hidden bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
+    <div className="w-100 flex flex-col overflow-hidden bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
       <div className="flex-1 overflow-y-auto">
         <SearchBar
           searchQuery={searchQuery}

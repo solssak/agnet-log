@@ -167,9 +167,9 @@ function App() {
           <BackgroundGradient />
           <div
             ref={profileScrollRef}
-            className="p-4 overflow-y-auto h-screen relative z-10"
+            className="w-screen p-4 overflow-y-auto h-screen relative z-10"
           >
-            <div className="max-w-4xl mx-auto bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl p-6">
+            <div className="max-w-4xl mx-auto p-6">
               <Dashboard />
             </div>
           </div>
@@ -179,7 +179,7 @@ function App() {
       {sidebarTab === "browse" && (
         <>
           <BackgroundGradient />
-          <div className="flex gap-4 p-4 h-screen relative z-10">
+          <div className="flex gap-4 p-4 h-screen w-screen z-10">
             <Sidebar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -197,7 +197,7 @@ function App() {
 
             <div
               ref={browseScrollRef}
-              className="flex-1 w-full overflow-y-auto p-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl"
+              className="flex-1 w-full overflow-y-auto p-4"
             >
               {loading && (
                 <div className="flex justify-center items-center h-full text-zinc-500">

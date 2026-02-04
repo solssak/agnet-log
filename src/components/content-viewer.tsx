@@ -24,7 +24,7 @@ export const ContentViewer = ({
   const codeSnippets = extractCodeSnippets(messages);
 
   return (
-    <div>
+    <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-base font-mono font-semibold">
           {viewMode === "messages" && `messages(${messages.length})`}
@@ -66,6 +66,6 @@ export const ContentViewer = ({
           Loading context...
         </div>
       )}
-    </div>
+    </>
   );
 };
