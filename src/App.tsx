@@ -453,10 +453,10 @@ function App() {
                     {messages.map((msg, idx) => (
                       <div
                         key={msg.uuid || idx}
-                        className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+                        className={`w-full px-4 py-3 rounded-2xl ${
                           msg.message?.role === "user"
-                            ? "self-end bg-zinc-700 text-white rounded-br-sm dark:bg-zinc-600"
-                            : "self-start bg-white dark:bg-zinc-800 rounded-bl-sm border border-zinc-200 dark:border-zinc-700"
+                            ? "bg-zinc-700 text-white dark:bg-zinc-600"
+                            : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"
                         }`}
                       >
                         <div className="flex justify-between items-center gap-3 mb-1.5">
