@@ -55,6 +55,14 @@ pub struct MessageContent {
     pub content: Option<serde_json::Value>,
 }
 
+#[derive(Debug, Deserialize)]
+struct TranscriptMessage {
+    #[serde(rename = "type")]
+    msg_type: Option<String>,
+    timestamp: Option<String>,
+    content: Option<String>,
+}
+
 fn get_claude_dir() -> Option<PathBuf> {
     dirs::home_dir().map(|home| home.join(".claude"))
 }
@@ -102,6 +110,31 @@ fn get_projects() -> Result<Vec<Project>, String> {
                     session_count,
                 });
             }
+        }
+    }
+
+    let transcripts_dir = claude_dir.join("transcripts");
+    if transcripts_dir.exists() {
+        let session_count = fs::read_dir(&transcripts_dir)
+            .map(|entries| {
+                entries
+                    .flatten()
+                    .filter(|e| {
+                        e.path()
+                            .extension()
+                            .map(|ext| ext == "jsonl")
+                            .unwrap_or(false)
+                    })
+                    .count()
+            })
+            .unwrap_or(0);
+
+        if session_count > 0 {
+            projects.push(Project {
+                name: "OpenCode Sessions".to_string(),
+                path: transcripts_dir.to_string_lossy().to_string(),
+                session_count,
+            });
         }
     }
 
@@ -181,11 +214,28 @@ fn calculate_session_stats(path: &PathBuf) -> (u64, u64, u32) {
             continue;
         }
 
+        let mut parsed = false;
+
         if let Ok(msg) = serde_json::from_str::<Message>(line) {
             if let Some(ref msg_type) = msg.msg_type {
                 if (msg_type == "user" || msg_type == "assistant") && has_text_content(&msg.message)
                 {
                     message_count += 1;
+                    parsed = true;
+                }
+            }
+        }
+
+        if !parsed {
+            if let Ok(transcript_msg) = serde_json::from_str::<TranscriptMessage>(line) {
+                if let Some(ref msg_type) = transcript_msg.msg_type {
+                    if msg_type == "user" {
+                        if let Some(ref content) = transcript_msg.content {
+                            if !content.trim().is_empty() {
+                                message_count += 1;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -218,11 +268,40 @@ fn get_messages(session_path: String) -> Result<Vec<Message>, String> {
         if line.trim().is_empty() {
             continue;
         }
+
+        let mut parsed = false;
+
         if let Ok(msg) = serde_json::from_str::<Message>(line) {
             if let Some(ref msg_type) = msg.msg_type {
                 if msg_type == "user" || msg_type == "assistant" {
                     if has_text_content(&msg.message) {
                         messages.push(msg);
+                        parsed = true;
+                    }
+                }
+            }
+        }
+
+        if !parsed {
+            if let Ok(transcript_msg) = serde_json::from_str::<TranscriptMessage>(line) {
+                if let Some(ref msg_type) = transcript_msg.msg_type {
+                    if msg_type == "user" {
+                        if let Some(ref content) = transcript_msg.content {
+                            if !content.trim().is_empty() {
+                                let converted_msg = Message {
+                                    msg_type: transcript_msg.msg_type.clone(),
+                                    uuid: None,
+                                    parent_uuid: None,
+                                    timestamp: transcript_msg.timestamp.clone(),
+                                    session_id: None,
+                                    message: Some(MessageContent {
+                                        role: Some("user".to_string()),
+                                        content: Some(serde_json::Value::String(content.clone())),
+                                    }),
+                                };
+                                messages.push(converted_msg);
+                            }
+                        }
                     }
                 }
             }
