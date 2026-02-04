@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { MessageRenderer } from "./components/MessageRenderer";
+import { useEffect, useRef, useState } from "react";
 import { Dashboard } from "./components/Dashboard";
+import { MessageRenderer } from "./components/MessageRenderer";
 import { useScrollPosition } from "./hooks/useScrollPosition";
 
 type Project = {
@@ -453,7 +453,7 @@ function App() {
                     {messages.map((msg, idx) => (
                       <div
                         key={msg.uuid || idx}
-                        className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+                        className={`max-w-[85%] min-w-0 px-4 py-3 rounded-2xl overflow-hidden ${
                           msg.message?.role === "user"
                             ? "self-end bg-zinc-700 text-white rounded-br-sm dark:bg-zinc-600"
                             : "self-start bg-white dark:bg-zinc-800 rounded-bl-sm border border-zinc-200 dark:border-zinc-700"
@@ -471,7 +471,7 @@ function App() {
                             {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ""}
                           </span>
                         </div>
-                        <div className="text-sm leading-relaxed">
+                        <div className="text-sm leading-relaxed min-w-0">
                           <MessageRenderer content={getMessageText(msg)} />
                         </div>
                       </div>

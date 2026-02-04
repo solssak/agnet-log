@@ -118,17 +118,17 @@ export function MessageRenderer({ content }: Props) {
   const blocks = parseContent(content);
 
   if (blocks.length === 0) {
-    return <div className="whitespace-pre-wrap break-words">{content}</div>;
+    return <div className="whitespace-pre-wrap break-words overflow-wrap-anywhere min-w-0">{content}</div>;
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 min-w-0">
       {blocks.map((block, idx) => {
         if (block.type === "code") {
           const isAuto = block.language.includes("(auto)");
           const lang = block.language.replace(" (auto)", "");
           return (
-            <div key={idx} className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+            <div key={idx} className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 min-w-0">
               <div className="px-3 py-1.5 bg-zinc-50 dark:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
                 <span>{lang}</span>
                 {isAuto && <span className="text-[9px] lowercase bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded">auto-detected</span>}
@@ -138,7 +138,7 @@ export function MessageRenderer({ content }: Props) {
           );
         }
         return (
-          <div key={idx} className="whitespace-pre-wrap break-words">
+          <div key={idx} className="whitespace-pre-wrap break-words overflow-wrap-anywhere min-w-0">
             {block.content}
           </div>
         );

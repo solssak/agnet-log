@@ -16,7 +16,7 @@ export function CodeBlock({ code, language }: Props) {
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className={`${className} m-0 p-3 text-[13px] leading-relaxed overflow-auto`}
+          className={`${className} m-0 p-3 text-[13px] leading-relaxed overflow-x-auto max-w-full`}
           style={style}
         >
           {tokens.map((line, i) => (
