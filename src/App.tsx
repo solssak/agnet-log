@@ -292,8 +292,10 @@ function App() {
               }}
             ></div>
           </div>
-          <div ref={profileScrollRef} className="pt-18 px-6 pb-6 max-w-4xl mx-auto overflow-y-auto h-screen relative z-10">
-            <Dashboard />
+          <div ref={profileScrollRef} className="p-4 overflow-y-auto h-screen relative z-10">
+            <div className="max-w-4xl mx-auto bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl p-6">
+              <Dashboard />
+            </div>
           </div>
         </>
       )}
@@ -309,7 +311,8 @@ function App() {
               }}
             ></div>
           </div>
-          <div className="w-80 border-r border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative z-10">
+          <div className="flex gap-4 p-4 h-screen relative z-10">
+          <div className="w-80 flex flex-col overflow-hidden bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
 <div className="flex-1 overflow-y-auto">
               <form className="p-3 border-b border-zinc-300 dark:border-zinc-700" onSubmit={handleSearch}>
                 <input
@@ -410,7 +413,7 @@ function App() {
             </div>
           </div>
 
-<div ref={browseScrollRef} className="flex-1 overflow-y-auto p-6 relative z-10">
+<div ref={browseScrollRef} className="flex-1 overflow-y-auto p-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-xl">
             {loading && (
               <div className="flex justify-center items-center h-full text-zinc-500">
                 Loading...
@@ -582,6 +585,7 @@ function App() {
                 {copyFeedback}
               </div>
             )}
+          </div>
           </div>
         </>
       )}
