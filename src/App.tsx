@@ -448,8 +448,8 @@ function App() {
                   </div>
                 </div>
 
-{viewMode === "messages" && (
-                  <div className="flex flex-col gap-3 max-w-3xl mx-auto">
+                {viewMode === "messages" && (
+                  <div className="flex flex-col gap-3 w-full">
                     {messages.map((msg, idx) => (
                       <div
                         key={msg.uuid || idx}
