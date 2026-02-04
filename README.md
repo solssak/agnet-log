@@ -18,6 +18,7 @@ Or visit the [Releases page](https://github.com/solssak/agnet-log/releases) for 
 ## Features
 
 - Browse all your Claude projects and sessions
+- **Full OpenCode session support** - View complete conversations including assistant responses
 - Search across all conversations
 - View messages in a chat-style UI
 - Extract code snippets from conversations

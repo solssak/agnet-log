@@ -2,6 +2,7 @@ use chrono::{Datelike, Timelike};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Project {
@@ -63,8 +64,261 @@ struct TranscriptMessage {
     content: Option<String>,
 }
 
+// Structs for OpenCode export JSON format
+#[derive(Debug, Deserialize)]
+struct ExportData {
+    messages: Vec<ExportMessage>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExportMessage {
+    info: ExportMessageInfo,
+    parts: Vec<ExportMessagePart>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExportMessageInfo {
+    id: String,
+    role: String,
+    time: ExportTime,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExportTime {
+    created: i64, // Unix timestamp in milliseconds
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+enum ExportMessagePart {
+    #[serde(rename = "text")]
+    Text { text: String },
+    #[serde(rename = "reasoning")]
+    Reasoning { text: String },
+    #[serde(rename = "tool")]
+    #[allow(dead_code)]
+    Tool {
+        #[serde(rename = "callID")]
+        call_id: String,
+        tool: String,
+        state: serde_json::Value,
+    },
+}
+
+// Structs for OpenCode storage directory format
+#[derive(Debug, Deserialize)]
+struct StorageMessage {
+    id: String,
+    #[serde(rename = "sessionID")]
+    session_id: String,
+    role: String,
+    time: StorageTime,
+    #[serde(rename = "parentID")]
+    parent_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StorageTime {
+    created: i64,
+    completed: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StoragePart {
+    id: String,
+    #[serde(rename = "type")]
+    part_type: String,
+    text: Option<String>,
+    tool: Option<String>,
+}
+
 fn get_claude_dir() -> Option<PathBuf> {
     dirs::home_dir().map(|home| home.join(".claude"))
+}
+
+fn get_opencode_bin() -> Option<PathBuf> {
+    dirs::home_dir().map(|home| home.join(".opencode/bin/opencode"))
+}
+
+fn get_opencode_storage_dir() -> Option<PathBuf> {
+    dirs::home_dir().map(|home| home.join(".local/share/opencode/storage"))
+}
+
+fn read_opencode_storage_messages(session_id: &str) -> Result<Vec<Message>, String> {
+    let storage_dir = get_opencode_storage_dir().ok_or("Could not find storage directory")?;
+
+    let message_dir = storage_dir.join("message").join(session_id);
+    if !message_dir.exists() {
+        return Err(format!(
+            "Message directory not found: {}",
+            message_dir.display()
+        ));
+    }
+
+    let part_dir = storage_dir.join("part");
+
+    let entries = fs::read_dir(&message_dir).map_err(|e| e.to_string())?;
+
+    let mut messages = Vec::new();
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if !path.extension().map(|e| e == "json").unwrap_or(false) {
+            continue;
+        }
+
+        let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;
+        let storage_msg: StorageMessage = serde_json::from_str(&content)
+            .map_err(|e| format!("Failed to parse message: {}", e))?;
+
+        if storage_msg.role != "user" && storage_msg.role != "assistant" {
+            continue;
+        }
+
+        let msg_parts_dir = part_dir.join(&storage_msg.id);
+        let mut text_parts = Vec::new();
+
+        if msg_parts_dir.exists() {
+            if let Ok(part_entries) = fs::read_dir(&msg_parts_dir) {
+                let mut parts: Vec<StoragePart> = Vec::new();
+
+                for part_entry in part_entries.flatten() {
+                    let part_path = part_entry.path();
+                    if !part_path.extension().map(|e| e == "json").unwrap_or(false) {
+                        continue;
+                    }
+
+                    if let Ok(part_content) = fs::read_to_string(&part_path) {
+                        if let Ok(part) = serde_json::from_str::<StoragePart>(&part_content) {
+                            parts.push(part);
+                        }
+                    }
+                }
+
+                parts.sort_by(|a, b| a.id.cmp(&b.id));
+
+                for part in parts {
+                    match part.part_type.as_str() {
+                        "text" => {
+                            if let Some(text) = part.text {
+                                text_parts.push(text);
+                            }
+                        }
+                        "reasoning" => {
+                            if let Some(text) = part.text {
+                                text_parts.push(format!("[Reasoning]\n{}", text));
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+
+        let content_text = if text_parts.is_empty() {
+            String::new()
+        } else {
+            text_parts.join("\n\n")
+        };
+
+        let timestamp_secs = storage_msg.time.created / 1000;
+        let timestamp = chrono::DateTime::from_timestamp(timestamp_secs, 0)
+            .map(|dt| dt.to_rfc3339())
+            .unwrap_or_default();
+
+        messages.push(Message {
+            msg_type: Some(storage_msg.role.clone()),
+            uuid: Some(storage_msg.id.clone()),
+            parent_uuid: storage_msg.parent_id,
+            timestamp: Some(timestamp),
+            session_id: Some(session_id.to_string()),
+            message: Some(MessageContent {
+                role: Some(storage_msg.role),
+                content: Some(serde_json::Value::String(content_text)),
+            }),
+        });
+    }
+
+    messages.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+
+    Ok(messages)
+}
+
+fn execute_opencode_export(session_id: &str) -> Result<ExportData, String> {
+    let opencode_bin = get_opencode_bin().ok_or("Could not find opencode binary")?;
+
+    if !opencode_bin.exists() {
+        return Err(format!(
+            "OpenCode binary not found at: {}",
+            opencode_bin.display()
+        ));
+    }
+
+    let output = Command::new(&opencode_bin)
+        .arg("export")
+        .arg(session_id)
+        .output()
+        .map_err(|e| format!("Failed to execute opencode export: {}", e))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("OpenCode export failed: {}", stderr));
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    let json_str = if let Some(start_pos) = stdout.find('{') {
+        &stdout[start_pos..]
+    } else {
+        return Err("No JSON found in export output".to_string());
+    };
+
+    serde_json::from_str(json_str).map_err(|e| format!("Failed to parse export JSON: {}", e))
+}
+
+fn convert_export_message_to_message(export_msg: ExportMessage) -> Option<Message> {
+    let role = export_msg.info.role.clone();
+
+    if role != "user" && role != "assistant" {
+        return None;
+    }
+
+    let mut text_parts = Vec::new();
+
+    for part in export_msg.parts {
+        match part {
+            ExportMessagePart::Text { text } => {
+                text_parts.push(text);
+            }
+            ExportMessagePart::Reasoning { text } => {
+                text_parts.push(format!("[Reasoning]\n{}", text));
+            }
+            ExportMessagePart::Tool { .. } => {}
+        }
+    }
+
+    if text_parts.is_empty() {
+        return None;
+    }
+
+    let content_text = text_parts.join("\n\n");
+    let timestamp_ms = export_msg.info.time.created;
+    let timestamp_secs = timestamp_ms / 1000;
+    let timestamp = chrono::DateTime::from_timestamp(timestamp_secs, 0)
+        .map(|dt| dt.to_rfc3339())
+        .unwrap_or_default();
+
+    Some(Message {
+        msg_type: Some(role.clone()),
+        uuid: Some(export_msg.info.id),
+        parent_uuid: None,
+        timestamp: Some(timestamp),
+        session_id: None,
+        message: Some(MessageContent {
+            role: Some(role),
+            content: Some(serde_json::Value::String(content_text)),
+        }),
+    })
 }
 
 #[tauri::command]
@@ -287,7 +541,27 @@ fn get_messages(session_path: String) -> Result<Vec<Message>, String> {
                 if let Some(ref msg_type) = transcript_msg.msg_type {
                     if msg_type == "user" {
                         if let Some(ref content) = transcript_msg.content {
-                            if !content.trim().is_empty() {
+                            let cleaned_content: String = content
+                                .lines()
+                                .filter(|line| {
+                                    let trimmed = line.trim();
+                                    !trimmed.starts_with("<system-reminder>")
+                                        && !trimmed.starts_with("[BACKGROUND TASK")
+                                        && !trimmed.starts_with("[ALL BACKGROUND TASKS")
+                                        && !trimmed.starts_with("**ID:**")
+                                        && !trimmed.starts_with("**Description:**")
+                                        && !trimmed.starts_with("**Duration:**")
+                                        && !trimmed.starts_with("Use `background_output")
+                                        && !trimmed.starts_with("Do NOT poll")
+                                        && !trimmed.contains("</system-reminder>")
+                                        && !trimmed.contains("still in progress")
+                                })
+                                .collect::<Vec<_>>()
+                                .join("\n")
+                                .trim()
+                                .to_string();
+
+                            if !cleaned_content.is_empty() {
                                 let converted_msg = Message {
                                     msg_type: transcript_msg.msg_type.clone(),
                                     uuid: None,
@@ -296,7 +570,7 @@ fn get_messages(session_path: String) -> Result<Vec<Message>, String> {
                                     session_id: None,
                                     message: Some(MessageContent {
                                         role: Some("user".to_string()),
-                                        content: Some(serde_json::Value::String(content.clone())),
+                                        content: Some(serde_json::Value::String(cleaned_content)),
                                     }),
                                 };
                                 messages.push(converted_msg);
@@ -703,6 +977,11 @@ pub struct DashboardStats {
 }
 
 #[tauri::command]
+fn get_opencode_messages(session_id: String) -> Result<Vec<Message>, String> {
+    read_opencode_storage_messages(&session_id)
+}
+
+#[tauri::command]
 fn get_dashboard_stats() -> Result<DashboardStats, String> {
     let claude_dir = get_claude_dir().ok_or("Could not find home directory")?;
     let projects_dir = claude_dir.join("projects");
@@ -912,6 +1191,7 @@ pub fn run() {
             get_projects,
             get_sessions,
             get_messages,
+            get_opencode_messages,
             search_messages,
             get_session_context,
             get_dashboard_stats

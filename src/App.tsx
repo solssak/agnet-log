@@ -79,10 +79,19 @@ function App() {
     setSelectedSession(session);
     setSessionContext(null);
     try {
-      const result = await invoke<Message[]>("get_messages", {
-        sessionPath: session.path,
-      });
-      setMessages(result);
+      const isOpenCodeSession = selectedProject?.name === "OpenCode Sessions";
+      
+      if (isOpenCodeSession) {
+        const result = await invoke<Message[]>("get_opencode_messages", {
+          sessionId: session.id,
+        });
+        setMessages(result);
+      } else {
+        const result = await invoke<Message[]>("get_messages", {
+          sessionPath: session.path,
+        });
+        setMessages(result);
+      }
     } catch (error) {
       console.error("Failed to load messages:", error);
     }
