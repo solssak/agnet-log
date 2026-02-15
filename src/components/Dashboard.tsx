@@ -9,6 +9,7 @@ import {
   BarChart,
   Bar,
 } from "recharts";
+import { formatTokens } from "../utils/format";
 
 type DailyStats = {
   date: string;
@@ -43,12 +44,6 @@ type DashboardStats = {
   estimated_cost: number;
   avg_session_minutes: number;
 };
-
-function formatTokens(tokens: number): string {
-  if (tokens < 1000) return `${tokens}`;
-  if (tokens < 1000000) return `${(tokens / 1000).toFixed(1)}K`;
-  return `${(tokens / 1000000).toFixed(2)}M`;
-}
 
 function formatDuration(minutes: number): string {
   if (minutes < 1) return "<1m";
