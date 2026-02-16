@@ -116,6 +116,8 @@ export function Dashboard() {
     total: d.input_tokens + d.output_tokens,
   }));
 
+  const maxTotal = Math.max(...chartData.map((x) => x.total), 1);
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
@@ -180,7 +182,6 @@ export function Dashboard() {
         <div className="relative">
           <div className="flex items-end gap-0.5 h-12">
             {chartData.map((d, i) => {
-              const maxTotal = Math.max(...chartData.map((x) => x.total), 1);
               const height = (d.total / maxTotal) * 100;
               return (
                 <div
