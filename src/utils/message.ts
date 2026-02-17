@@ -15,9 +15,9 @@ export const getMessageText = (message: Message): string => {
 
 export const extractCodeSnippets = (messages: Message[]): CodeSnippet[] => {
   const snippets: CodeSnippet[] = [];
-  const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
 
   for (const msg of messages) {
+    const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
     const text = getMessageText(msg);
     let match;
     while ((match = codeBlockRegex.exec(text)) !== null) {
