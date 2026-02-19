@@ -118,6 +118,11 @@ export function Dashboard() {
 
   const maxTotal = Math.max(...chartData.map((x) => x.total), 1);
 
+  const peakDayIndex = chartData.reduce(
+    (max, d, i) => (d.total > (chartData[max]?.total || 0) ? i : max),
+    0,
+  );
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
@@ -244,19 +249,7 @@ export function Dashboard() {
           </div>
           <div className="flex-1 text-center">
             <span className="block text-base font-semibold">
-              {chartData.reduce(
-                (max, d, i) =>
-                  d.total > (chartData[max]?.total || 0) ? i : max,
-                0,
-              ) >= 0
-                ? chartData[
-                    chartData.reduce(
-                      (max, d, i) =>
-                        d.total > (chartData[max]?.total || 0) ? i : max,
-                      0,
-                    )
-                  ]?.date || "-"
-                : "-"}
+              {chartData[peakDayIndex]?.date || "-"}
             </span>
             <span className="text-xs text-zinc-500">Peak day</span>
           </div>
