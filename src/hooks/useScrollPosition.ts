@@ -1,7 +1,6 @@
 import { useEffect, useState, RefObject } from "react";
 
 export function useScrollPosition(scrollRef: RefObject<HTMLElement | null>) {
-  const [scrollY, setScrollY] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true);
 
   useEffect(() => {
@@ -10,7 +9,6 @@ export function useScrollPosition(scrollRef: RefObject<HTMLElement | null>) {
 
     const handleScroll = () => {
       const currentScrollY = element.scrollTop;
-      setScrollY(currentScrollY);
       setIsAtTop(currentScrollY < 10);
     };
 
@@ -21,5 +19,5 @@ export function useScrollPosition(scrollRef: RefObject<HTMLElement | null>) {
     };
   }, [scrollRef]);
 
-  return { scrollY, isAtTop };
+  return { isAtTop };
 }
