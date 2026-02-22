@@ -58,11 +58,9 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hoveredBar, setHoveredBar] = useState<{
-    index: number;
-    x: number;
-    y: number;
-  } | null>(null);
+   const [hoveredBar, setHoveredBar] = useState<{
+     index: number;
+   } | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -193,14 +191,11 @@ export function Dashboard() {
                   key={i}
                   className="flex-1 bg-gradient-to-t from-teal-500 to-teal-400 rounded-t cursor-pointer hover:from-teal-600 hover:to-teal-500 transition-all"
                   style={{ height: `${Math.max(height, 4)}%` }}
-                  onMouseEnter={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setHoveredBar({
-                      index: i,
-                      x: rect.left + rect.width / 2,
-                      y: rect.top,
-                    });
-                  }}
+                   onMouseEnter={() => {
+                     setHoveredBar({
+                       index: i,
+                     });
+                   }}
                   onMouseLeave={() => setHoveredBar(null)}
                 />
               );
