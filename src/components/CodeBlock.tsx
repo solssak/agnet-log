@@ -1,4 +1,5 @@
 import { Highlight, themes } from "prism-react-renderer";
+import { useDarkMode } from "../hooks/useDarkMode";
 import { cn } from "../utils/cn";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
 };
 
 export function CodeBlock({ code, language }: Props) {
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const isDark = useDarkMode();
 
   return (
     <Highlight

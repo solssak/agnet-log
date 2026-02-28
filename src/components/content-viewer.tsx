@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { Message, SessionContext, ViewMode } from "../types";
 import { extractCodeSnippets } from "../utils/message";
 import { MessageList } from "./message-list";
@@ -22,7 +23,7 @@ export const ContentViewer = ({
   onCopy,
   onLoadContext,
 }: Props) => {
-  const codeSnippets = extractCodeSnippets(messages);
+  const codeSnippets = useMemo(() => extractCodeSnippets(messages), [messages]);
 
   return (
     <>
