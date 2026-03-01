@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { SessionContext } from "../types";
 import { cn } from "../utils/cn";
 
@@ -6,6 +7,16 @@ type Props = {
 };
 
 export const SessionContextView = ({ sessionContext }: Props) => {
+  const uniqueFileChanges = useMemo(
+    () =>
+      [
+        ...new Map(
+          sessionContext.file_changes.map((f) => [f.file_path, f]),
+        ).values(),
+      ],
+    [sessionContext.file_changes],
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -13,16 +24,12 @@ export const SessionContextView = ({ sessionContext }: Props) => {
           Modified files ({sessionContext.file_changes.length})
         </h3>
         <div className="flex flex-col gap-2">
-          {sessionContext.file_changes.length === 0 ? (
+          {uniqueFileChanges.length === 0 ? (
             <p className="text-sm text-zinc-400 italic">
               No file modifications found.
             </p>
           ) : (
-            [
-              ...new Map(
-                sessionContext.file_changes.map((f) => [f.file_path, f]),
-              ).values(),
-            ].map((change, idx) => (
+            uniqueFileChanges.map((change, idx) => (
               <div
                 key={idx}
                 className="flex items-center gap-2.5 px-3 py-2 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700"

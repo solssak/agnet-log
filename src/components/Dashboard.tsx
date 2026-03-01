@@ -55,6 +55,13 @@ function formatDuration(minutes: number): string {
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+const TOOLTIP_CONTENT_STYLE = {
+  backgroundColor: "#1a1a1a",
+  border: "1px solid #333",
+} as const;
+
+const TOOLTIP_LABEL_STYLE = { color: "#999" } as const;
+
 export function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -329,11 +336,8 @@ export function Dashboard() {
                 width={120}
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1a1a1a",
-                  border: "1px solid #333",
-                }}
-                labelStyle={{ color: "#999" }}
+                contentStyle={TOOLTIP_CONTENT_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
                 formatter={(value) => [formatTokens(value as number), "Tokens"]}
               />
               <Bar dataKey="tokens" fill="#14b8a6" radius={[0, 4, 4, 0]} />
