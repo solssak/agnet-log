@@ -79,8 +79,9 @@ export function Dashboard() {
       setStats(result);
     } catch (error) {
       console.error("Failed to load dashboard stats:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   if (loading) {

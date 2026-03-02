@@ -9,7 +9,9 @@ type Props = {
 
 export const TabSwitcher = ({ sidebarTab, setSidebarTab, isAtTop }: Props) => {
   return (
-    <div
+    <nav
+      role="tablist"
+      aria-label="Main navigation"
       className={cn(
         "fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 p-1 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-200/50 dark:border-white/10 shadow-lg transition-all duration-300",
         isAtTop
@@ -18,6 +20,8 @@ export const TabSwitcher = ({ sidebarTab, setSidebarTab, isAtTop }: Props) => {
       )}
     >
       <button
+        role="tab"
+        aria-selected={sidebarTab === "profile"}
         className={cn(
           "px-5 py-2.5 rounded-xl text-xs font-mono font-semibold tracking-wide transition-all",
           sidebarTab === "profile"
@@ -29,6 +33,8 @@ export const TabSwitcher = ({ sidebarTab, setSidebarTab, isAtTop }: Props) => {
         Profile
       </button>
       <button
+        role="tab"
+        aria-selected={sidebarTab === "browse"}
         className={cn(
           "px-5 py-2.5 rounded-xl text-xs font-mono font-semibold tracking-wide transition-all",
           sidebarTab === "browse"
@@ -39,6 +45,6 @@ export const TabSwitcher = ({ sidebarTab, setSidebarTab, isAtTop }: Props) => {
       >
         Browse
       </button>
-    </div>
+    </nav>
   );
 };

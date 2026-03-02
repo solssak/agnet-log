@@ -70,8 +70,9 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load sessions:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function loadMessages(session: Session) {
@@ -94,8 +95,9 @@ function App() {
       }
     } catch (error) {
       console.error("Failed to load messages:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function loadContext() {
@@ -125,8 +127,9 @@ function App() {
       setSearchResults(results);
     } catch (error) {
       console.error("Search failed:", error);
+    } finally {
+      setIsSearching(false);
     }
-    setIsSearching(false);
   }
 
   async function openSearchResult(result: SearchResult) {

@@ -23,11 +23,13 @@ export const SearchBar = ({
       <form
         className="p-3 border-b border-zinc-300 dark:border-zinc-700"
         onSubmit={onSubmit}
+        role="search"
       >
         <input
           type="text"
           className="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
           placeholder="Search messages"
+          aria-label="Search messages"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
