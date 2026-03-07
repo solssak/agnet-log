@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDarkMode } from "../hooks/useDarkMode";
 import { invoke } from "@tauri-apps/api/core";
 import {
   XAxis,
@@ -68,6 +69,7 @@ export function Dashboard() {
    const [hoveredBar, setHoveredBar] = useState<{
      index: number;
    } | null>(null);
+  const isDark = useDarkMode();
 
   useEffect(() => {
     loadStats();
@@ -300,7 +302,7 @@ export function Dashboard() {
                   style={{
                     backgroundColor: count
                       ? `rgba(20, 184, 166, ${0.2 + (count / maxActivity) * 0.8})`
-                      : "rgb(38, 38, 38)",
+                      : isDark ? "rgb(38, 38, 38)" : "rgb(228, 228, 231)",
                   }}
                   title={`${DAYS[dayIdx]} ${hourIdx}:00 - ${count} messages`}
                 />
