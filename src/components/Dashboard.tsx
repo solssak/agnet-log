@@ -56,12 +56,6 @@ function formatDuration(minutes: number): string {
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const TOOLTIP_CONTENT_STYLE = {
-  backgroundColor: "#1a1a1a",
-  border: "1px solid #333",
-} as const;
-
-const TOOLTIP_LABEL_STYLE = { color: "#999" } as const;
 
 export function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -70,6 +64,13 @@ export function Dashboard() {
      index: number;
    } | null>(null);
   const isDark = useDarkMode();
+
+  const tooltipContentStyle = {
+    backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+    border: isDark ? "1px solid #333" : "1px solid #d4d4d8",
+  } as const;
+
+  const tooltipLabelStyle = { color: isDark ? "#999" : "#71717a" } as const;
 
   useEffect(() => {
     loadStats();
@@ -324,23 +325,23 @@ export function Dashboard() {
               }))}
               layout="vertical"
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#333" : "#e4e4e7"} />
               <XAxis
                 type="number"
-                stroke="#666"
+                stroke={isDark ? "#666" : "#a1a1aa"}
                 fontSize={11}
                 tickFormatter={formatTokens}
               />
               <YAxis
                 type="category"
                 dataKey="name"
-                stroke="#666"
+                stroke={isDark ? "#666" : "#a1a1aa"}
                 fontSize={11}
                 width={120}
               />
               <Tooltip
-                contentStyle={TOOLTIP_CONTENT_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
                 formatter={(value) => [formatTokens(value as number), "Tokens"]}
               />
               <Bar dataKey="tokens" fill="#14b8a6" radius={[0, 4, 4, 0]} />
