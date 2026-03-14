@@ -60,9 +60,9 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-   const [hoveredBar, setHoveredBar] = useState<{
-     index: number;
-   } | null>(null);
+  const [hoveredBar, setHoveredBar] = useState<{
+    index: number;
+  } | null>(null);
   const isDark = useDarkMode();
 
   const tooltipContentStyle = {
