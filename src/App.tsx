@@ -178,9 +178,10 @@ function App() {
         isAtTop={isAtTop}
       />
 
+      <BackgroundGradient />
+
       {sidebarTab === "profile" && (
         <>
-          <BackgroundGradient />
           <div
             ref={profileScrollRef}
             className="w-screen p-4 overflow-y-auto h-screen relative z-10"
@@ -194,7 +195,6 @@ function App() {
 
       {sidebarTab === "browse" && (
         <>
-          <BackgroundGradient />
           <div className="flex gap-4 p-4 h-screen w-screen z-10">
             <Sidebar
               searchQuery={searchQuery}

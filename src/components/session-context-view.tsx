@@ -21,7 +21,7 @@ export const SessionContextView = ({ sessionContext }: Props) => {
     <div className="flex flex-col gap-6">
       <div>
         <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-3">
-          Modified files ({sessionContext.file_changes.length})
+          Modified files ({uniqueFileChanges.length})
         </h3>
         <div className="flex flex-col gap-2">
           {uniqueFileChanges.length === 0 ? (
